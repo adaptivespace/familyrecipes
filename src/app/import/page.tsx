@@ -19,7 +19,7 @@ export default function ImportPage() {
   // Edit State
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
-  const [yieldNum, setYieldNum] = useState(2);
+  const [yieldNum, setYieldNum] = useState<number | string>(2);
   const [instructions, setInstructions] = useState('');
 
   const handleImport = async () => {
@@ -56,7 +56,7 @@ export default function ImportPage() {
       const payload = {
         title,
         tags: tagList,
-        yield: yieldNum,
+        yield: Number(yieldNum) || 2,
         ingredients: importedData.ingredients, // We assume parser did its best, or we could add an editor for this too
         content: instructions,
         source_url: url,
@@ -126,7 +126,10 @@ export default function ImportPage() {
                label="Yield (Servings)" 
                type="number" 
                value={yieldNum} 
-               onChange={e => setYieldNum(parseInt(e.target.value))} 
+               onChange={e => {
+                 const val = parseInt(e.target.value);
+                 setYieldNum(isNaN(val) ? '' : val);
+               }} 
              />
              <TextField 
                label="Tags (comma separated)" 
