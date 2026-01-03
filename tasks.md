@@ -99,3 +99,18 @@
 - [x] **Testing**
   - Verify scaling math on edge cases (fractions, no units).
   - Verify YouTube imports work for generic video descriptions.
+
+## Phase 8: Enhancements
+- [ ] **Recipe Editing (Detail View)**
+    - Add "Edit" button to Recipe Detail page.
+    - Create a form (similar to Import Review) to edit Title, Yield, Ingredients, and Instructions.
+    - Wire up `PATCH` or `PUT` to update the markdown file.
+- [ ] **Global Navigation**
+    - Ensure a "Home" / "Family Recipes" logo link is present in the Header/AppBar on all pages.
+    - Verify `RecipeDetailView` and `ImportPage` have clear paths back to `/`.
+- [ ] **Metric Conversion System**
+    - Create `src/lib/converter.ts` or update `importer.ts`.
+    - Detect Imperial units (oz, lb, cup, pint, quart, gallon, inch).
+    - Convert to Metric (g, ml, cm).
+    - Rule: Keep `tsp`, `tbsp` as is.
+    - Apply this transformation during the Import process (before saving).
