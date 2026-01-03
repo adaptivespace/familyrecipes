@@ -116,6 +116,11 @@ export default function ImportPage() {
 
       {step === 1 && importedData && (
         <Paper sx={{ p: 4 }}>
+          {importedData.ingredients.length === 0 && !importedData.instructions && (
+             <Alert severity="warning" sx={{ mb: 2 }}>
+               No automatic recipe data found. Please fill in the details manually.
+             </Alert>
+          )}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
              <TextField 
                label="Title" 

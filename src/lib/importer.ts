@@ -87,7 +87,17 @@ async function importFromWeb(url: string): Promise<ImportResult> {
   });
 
   if (!recipeData) {
-    throw new Error('No Schema.org Recipe found on this page.');
+    // Fallback: Return basic metadata to allow manual entry
+    const title = $('meta[property="og:title"]').attr('content') || $('title').text() || 'Untitled Recipe';
+    const image = $('meta[property="og:image"]').attr('content');
+    
+    return {
+      title,
+      ingredients: [],
+      instructions: '',
+      yield: 2,
+      image,
+    };
   }
 
   // Extract fields
