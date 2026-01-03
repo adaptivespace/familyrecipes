@@ -15,7 +15,7 @@ const INGREDIENT_REGEX = /@([^{]+)\{([\d\.]+)?%?([^}]*)\}/g;
  * Output: "Mix 400g flour with..."
  */
 export function scaleRecipeText(text: string, multiplier: number = 1): string {
-  return text.replace(INGREDIENT_REGEX, (match, name, qty, unit) => {
+  let scaled = text.replace(INGREDIENT_REGEX, (match, name, qty, unit) => {
     const currentQty = parseFloat(qty);
     if (isNaN(currentQty)) return name; // Fallback to just name if no qty
 
@@ -26,6 +26,22 @@ export function scaleRecipeText(text: string, multiplier: number = 1): string {
     const qtyUnit = unit ? `${formattedQty}${unit}` : `${formattedQty}`;
     return `${qtyUnit} ${name}`;
   });
+
+  // Add Emoji for Temperature (e.g., 180C, 350°F)
+  // Avoid double-adding if emoji is already present
+  scaled = scaled.replace(/(🌡️\s*)?(\b\d+(?:-\d+)?\s*(?:°|deg|degree|degrees)?\s*[CF]\b)/gi, (match, prefix, temp) => {
+    if (prefix) return match;
+    return `🌡️ ${temp}`;
+  });
+
+  // Add Emoji for Time (e.g., 10 mins, 1h 30m)
+  // Avoid double-adding if emoji is already present
+  scaled = scaled.replace(/(⏲️\s*)?(\b\d+(?:-\d+)?\s*(?:min|mins|minute|minutes|hr|hrs|hour|hours|h|m)\b)/gi, (match, prefix, time) => {
+    if (prefix) return match;
+    return `⏲️ ${time}`;
+  });
+
+  return scaled;
 }
 
 /**
