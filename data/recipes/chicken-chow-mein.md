@@ -2,8 +2,6 @@
 title: Chicken Chow Mein Noodles
 tags:
   - Asian
-  - Noodles
-  - Chicken
 ingredients:
   - quantity: 340
     unit: g

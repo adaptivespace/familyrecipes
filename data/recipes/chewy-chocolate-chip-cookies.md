@@ -3,42 +3,41 @@ title: Chewy Chocolate Chip Cookies
 tags:
   - Baking
   - Cookies
-  - Chocolate
   - Sweet
 ingredients:
   - quantity: 300
     unit: g
-    name: all-purpose flour
+    name: All-purpose flour
   - quantity: 1
     unit: tsp
-    name: baking soda
+    name: Baking soda
   - quantity: 1
     unit: tsp
-    name: cornstarch
+    name: Cornstarch
   - quantity: 1
     unit: tsp
-    name: salt
+    name: Salt
   - quantity: 170
     unit: g
-    name: 'unsalted butter, melted & cooled for 5 minutes'
+    name: 'Unsalted butter, melted & cooled for 5 minutes'
   - quantity: 150
     unit: g
-    name: packed light or dark brown sugar
+    name: Packed light or dark brown sugar
   - quantity: 100
     unit: g
-    name: granulated sugar
+    name: Granulated sugar
   - quantity: 1
     unit: x
-    name: large egg
+    name: Large egg
   - quantity: 1
     unit: x
-    name: 'egg yolk, at room temperature'
+    name: 'Egg yolk, at room temperature'
   - quantity: 2
     unit: tsp
-    name: vanilla extract
+    name: Vanilla extract
   - quantity: 225
     unit: g
-    name: semi-sweet chocolate chips or chocolate chunks
+    name: Semi-sweet chocolate chips or chocolate chunks
 yield: 16
 source_url: 'https://sallysbakingaddiction.com/chewy-chocolate-chip-cookies/'
 image: >-

@@ -3,7 +3,7 @@ title: Momofuku Bo Ssam
 tags:
   - Asian
   - Korean
-  - Party
+  - Festive
   - Low&Slow
 ingredients:
   - quantity: 4
@@ -26,7 +26,7 @@ ingredients:
     name: Apple cider vinegar
   - quantity: 0
     unit: ''
-    name: SALTED-SHRIMP-SAUCE-(OPTIONAL)
+    name: Salted Shrimp Sauce (optional)
   - quantity: 2
     unit: Tbsp
     name: Korean salted shrimps
@@ -47,7 +47,7 @@ ingredients:
     name: Green onion
   - quantity: 0
     unit: ''
-    name: SSAM-SAUCE
+    name: Ssam Sauce
   - quantity: 237
     unit: g
     name: Doenjang
@@ -77,7 +77,7 @@ ingredients:
     name: Green onion
   - quantity: 0
     unit: ''
-    name: ACCOMPANIMENTS
+    name: Other accompaniments
   - quantity: 800
     unit: g
     name: Rice
@@ -105,6 +105,6 @@ image: 'https://mykoreankitchen.com/wp-content/uploads/2017/12/5.-Momofuku-Bo-Ss
 - Prepare other accompaniments as needed.
 - Once cooked, the pork should be very easy to pull apart with tongs and forks. Remove the pork from the oven.
 - Combine the remaining salt, brown sugar and vinegar in a small bowl. Mix them well. Gently rub the mixture all over the cooked pork (mainly the top of the pork). Watch out for your hands as you rub as the meat can be hot.
-- Turn the oven to 260 C / 500 F (or use a grill / broiler function). 
+- Turn the oven to 260 C (or use a grill / broiler function). 
 - Place the pork in the oven and cook it until a dark caramel crust develops on the meat. It takes 5 to 10 mins. 
 - Serve hot, with the accompaniments.

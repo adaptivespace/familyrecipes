@@ -4,6 +4,8 @@ tags:
   - Festive
   - New Years
   - Cookies
+  - Baking
+  - Sweet
 ingredients:
   - quantity: 300
     unit: gr
@@ -26,13 +28,14 @@ ingredients:
   - quantity: 2
     unit: tl
     name: Vanille-extract
-yield: 40
+yield: 20
 source_url: ''
 image: >-
   https://www.laurasbakery.nl/wp-content/uploads/2023/10/Kniepertjes-uitgelicht.jpg
 ---
 - Smelt de roomboter
 - Eieren kloppen met beetje bloem en suiker. Daarna boter, vanille-extract, kaneel, Jenever/Wodka en rest van de bloem en suiker toevoegen.
-- Draai balletjes van het deeg (40 stuks). Laat deze bij voorkeur een uur rusten in de koelkast.
+- Vorm een grote bol en doe die in vershoudfolie. Laat deze bij voorkeur een uur rusten in de koelkast.
+- Draai balletjes van het deeg (40 stuks). 
 - Verhit het wafelijzer en vet deze in met boter of bakspray. Plaats er een balletje deeg tussen en sluit het ijzer. Bak in enkele minuten tot het kniepertje goudbruin is van kleur.
 - Gebruik een spatel om het kniepertje naar een rooster te verplaatsen. Laat hier verder afkoelen en knapperig worden.
