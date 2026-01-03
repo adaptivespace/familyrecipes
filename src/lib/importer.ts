@@ -125,10 +125,13 @@ async function importFromWeb(url: string): Promise<ImportResult> {
   let instructions = '';
   if (Array.isArray(recipeData.recipeInstructions)) {
     instructions = recipeData.recipeInstructions.map((step: any) => {
-      if (typeof step === 'string') return step;
-      if (step.text) return step.text;
-      return '';
-    }).join('\n\n');
+      let text = '';
+      if (typeof step === 'string') text = step;
+      else if (step.text) text = step.text;
+      
+      // Ensure it's a list item, remove existing numbering if any to avoid double bullets
+      return `- ${text.replace(/^(\d+\.|-|\*)\s*/, '')}`; 
+    }).join('\n');
   } else if (typeof recipeData.recipeInstructions === 'string') {
     instructions = recipeData.recipeInstructions;
   }
