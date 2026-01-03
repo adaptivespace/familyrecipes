@@ -8,6 +8,8 @@ import {
   Paper, TextField, Chip, Dialog, DialogTitle, DialogContent, 
   DialogContentText, DialogActions, Checkbox, FormControlLabel 
 } from '@mui/material';
+import { parseIngredientLine, ParsedIngredient } from '@/lib/parser';
+import { convertIngredient } from '@/lib/converter';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HomeIcon from '@mui/icons-material/Home';
 import ShareIcon from '@mui/icons-material/Share';
@@ -35,8 +37,21 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
     title: recipe.title,
     yield: recipe.yield || 2,
     tags: (recipe.tags || []).join(', '),
-    content: recipe.content
+    content: recipe.content,
+    ingredients: recipe.ingredients
   });
+  const [rawIngredients, setRawIngredients] = useState('');
+
+  // Initialize raw ingredients on edit start
+  useEffect(() => {
+    if (isEditing) {
+      const ingText = recipe.ingredients.map(ing => {
+         const unit = ing.unit ? `${ing.unit} ` : '';
+         return `${ing.quantity} ${unit}${ing.name}`.trim();
+      }).join('\n');
+      setRawIngredients(ingText);
+    }
+  }, [isEditing, recipe.ingredients]);
   const [notes, setNotes] = useState(recipe.notes || '');
   const [savingNotes, setSavingNotes] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -125,6 +140,17 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
     setUploading(true); // Reuse loading state
     try {
       const tagList = editForm.tags.split(',').map(t => t.trim()).filter(Boolean);
+      
+      // Parse manual ingredients
+      let finalIngredients = editForm.ingredients;
+      if (rawIngredients.trim()) {
+        finalIngredients = rawIngredients.split('\n').map(line => {
+           if (!line.trim()) return null;
+           const parsed = parseIngredientLine(line.trim());
+           return convertIngredient(parsed);
+        }).filter(Boolean) as ParsedIngredient[];
+      }
+
       await fetch(`/api/recipes/${recipe.slug}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -132,7 +158,8 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
           title: editForm.title,
           yield: Number(editForm.yield) || 2,
           tags: tagList,
-          content: editForm.content
+          content: editForm.content,
+          ingredients: finalIngredients
         }),
       });
       setIsEditing(false);
@@ -238,6 +265,14 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
               fullWidth
               value={editForm.tags}
               onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })}
+            />
+            <TextField 
+              label="Ingredients (one per line)" 
+              multiline
+              rows={6}
+              value={rawIngredients} 
+              onChange={e => setRawIngredients(e.target.value)} 
+              helperText="Format: Quantity Unit Name (e.g. 200 g Flour)"
             />
             <TextField
               label="Instructions (Markdown)"
