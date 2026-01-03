@@ -86,7 +86,7 @@ export function saveRecipe(recipe: Recipe): void {
 
   const fullPath = path.join(recipesDirectory, `${recipe.slug}.md`);
   
-  const data = {
+  const data: Record<string, any> = {
     title: recipe.title,
     tags: recipe.tags,
     ingredients: recipe.ingredients,
@@ -97,6 +97,9 @@ export function saveRecipe(recipe: Recipe): void {
     image: recipe.image,
   };
 
-  const fileContent = matter.stringify(recipe.content, data);
+  // Remove undefined values to avoid YAMLException
+  Object.keys(data).forEach(key => data[key] === undefined && delete data[key]);
+
+  const fileContent = matter.stringify(recipe.content || '', data);
   fs.writeFileSync(fullPath, fileContent);
 }
