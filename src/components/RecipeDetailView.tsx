@@ -319,6 +319,16 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
             {tab === 0 && (
               <Box>
                 {recipe.ingredients.map((ing, i) => {
+                   const isHeader = ing.quantity === 0 && !ing.unit;
+                   
+                   if (isHeader) {
+                     return (
+                       <Box key={i} sx={{ pt: 2, pb: 1, borderBottom: '2px solid #eee' }}>
+                         <Typography variant="h6" color="primary">{ing.name}</Typography>
+                       </Box>
+                     );
+                   }
+
                    const scaledQty = ing.quantity * multiplier;
                    const qtyDisplay = scaledQty ? parseFloat(scaledQty.toFixed(2)) : '';
                    return (
