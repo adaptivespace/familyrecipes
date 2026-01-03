@@ -103,3 +103,10 @@ export function saveRecipe(recipe: Recipe): void {
   const fileContent = matter.stringify(recipe.content || '', data);
   fs.writeFileSync(fullPath, fileContent);
 }
+
+export function deleteRecipe(slug: string): void {
+  const fullPath = path.join(recipesDirectory, `${slug}.md`);
+  if (fs.existsSync(fullPath)) {
+    fs.unlinkSync(fullPath);
+  }
+}

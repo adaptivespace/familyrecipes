@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { ParsedIngredient } from './parser';
+import { convertToMetric, convertIngredient } from './converter';
 
 export interface ImportResult {
   title: string;
@@ -32,9 +33,6 @@ async function importFromYoutube(url: string): Promise<ImportResult> {
   }
 
   // Fetch Page to get metadata (Title, Description)
-  // Note: YouTube often blocks simple fetch, might need User-Agent or fallbacks.
-  // oEmbed is safer for Title/Thumbnail, but doesn't give Description.
-  // We'll try fetch first.
   const response = await fetch(url, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
@@ -47,25 +45,14 @@ async function importFromYoutube(url: string): Promise<ImportResult> {
   const description = $('meta[property="og:description"]').attr('content') || '';
   const image = $('meta[property="og:image"]').attr('content');
 
-  // Attempt to parse ingredients from description
-  // Simple heuristic: look for lines starting with "-", "*", or numbers
-  const ingredients: ParsedIngredient[] = [];
-  const lines = description.split('\n');
-  const instructionsParts: string[] = [];
-  
-  let captureIngredients = false;
-  // This is a naive parser for YT descriptions
-  // Usually creators put "Ingredients:" then list.
-  
-  // For now, return raw description as instructions or try to split?
-  // Let's just put the description in instructions and let user edit.
-  // And maybe empty ingredients list?
+  // Convert Description (Instructions) to Metric
+  const metricDescription = convertToMetric(description);
   
   return {
     title,
-    description,
-    ingredients: [], // Hard to parse reliably without ML or strict format
-    instructions: description, // Put description as instructions body
+    description: metricDescription,
+    ingredients: [], 
+    instructions: metricDescription, 
     yield: 2, // Default
     image,
     youtube_id: videoId,
@@ -122,11 +109,13 @@ async function importFromWeb(url: string): Promise<ImportResult> {
     // Very basic regex
     const match = str.match(/^([\d\.\/\s]+)?([a-zA-Z]+)?\s+(.*)/);
     if (match) {
-      return {
-        quantity: parseFloat(match[1]) || 0,
-        unit: match[2] || '',
-        name: match[3] || str, // fallback
-      };
+        const parsed = {
+            quantity: parseFloat(match[1]) || 0,
+            unit: match[2] || '',
+            name: match[3] || str, // fallback
+        };
+        // Convert to Metric
+        return convertIngredient(parsed);
     }
     return { name: str, quantity: 0, unit: '' };
   });
@@ -143,9 +132,8 @@ async function importFromWeb(url: string): Promise<ImportResult> {
     instructions = recipeData.recipeInstructions;
   }
 
-  // Simple HTML to Markdown for instructions (if they contain tags)
-  // If instructions came from JSON-LD they are usually text, but sometimes HTML.
-  // We'll assume text for now or simple strip.
+  // Convert Instructions Text to Metric
+  instructions = convertToMetric(instructions);
   
   return {
     title,

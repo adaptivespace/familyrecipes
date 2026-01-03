@@ -7,6 +7,7 @@ import {
   Alert, Stepper, Step, StepLabel 
 } from '@mui/material';
 import { ImportResult } from '@/lib/importer';
+import AppHeader from '@/components/AppHeader';
 
 export default function ImportPage() {
   const router = useRouter();
@@ -82,15 +83,15 @@ export default function ImportPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom>Import Recipe</Typography>
-      
-      <Stepper activeStep={step} sx={{ mb: 4 }}>
-        <Step><StepLabel>Paste URL</StepLabel></Step>
-        <Step><StepLabel>Review & Save</StepLabel></Step>
-      </Stepper>
+    <>
+      <AppHeader title="Import Recipe" />
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Stepper activeStep={step} sx={{ mb: 4 }}>
+          <Step><StepLabel>Paste URL</StepLabel></Step>
+          <Step><StepLabel>Review & Save</StepLabel></Step>
+        </Stepper>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       {step === 0 && (
         <Paper sx={{ p: 4 }}>
@@ -159,6 +160,8 @@ export default function ImportPage() {
           </Box>
         </Paper>
       )}
-    </Container>
+      </Container>
+    </>
   );
 }
+
