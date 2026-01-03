@@ -1,0 +1,15 @@
+version: '3'
+services:
+  familyrecipes:
+    build: .
+    container_name: familyrecipes
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      # Persist the recipes markdown files
+      - ./data/recipes:/app/data/recipes
+      # Persist the uploaded images
+      - ./public/images/uploads:/app/public/images/uploads
+    environment:
+      - NODE_ENV=production
