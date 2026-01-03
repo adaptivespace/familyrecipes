@@ -23,17 +23,6 @@ export function scaleRecipeText(text: string, multiplier: number = 1): string {
     // Format: remove unnecessary decimals (e.g. 2.00 -> 2, 2.50 -> 2.5)
     const formattedQty = parseFloat(newQty.toFixed(2)); 
     
-    const unitStr = unit ? `${unit} ` : ''; // Add space if unit exists? 
-    // Usually "200g" (no space) or "2 cups" (space)? 
-    // Let's assume the user puts space in unit if they want it? 
-    // Or we format: number + unit + space + name.
-    // "400g flour" vs "2 eggs".
-    
-    // Let's try to be smart: if unit is long (>2 chars), maybe space? 
-    // "200g" vs "2 cups".
-    // For now, let's just output `qty` + `unit` + ` ` + `name`.
-    // Wait, if unit is empty, we don't want extra space.
-    
     const qtyUnit = unit ? `${formattedQty}${unit}` : `${formattedQty}`;
     return `${qtyUnit} ${name}`;
   });
@@ -57,4 +46,23 @@ export function extractIngredients(text: string): ParsedIngredient[] {
     });
   }
   return ingredients;
+}
+
+/**
+ * Parses a single ingredient line string into a ParsedIngredient object.
+ * Logic extracted from importer.ts for reuse.
+ * Example: "200g flour" -> { quantity: 200, unit: 'g', name: 'flour' }
+ */
+export function parseIngredientLine(line: string): ParsedIngredient {
+    // Simple parser: "200g flour" -> qty: 200, unit: g, name: flour
+    // Very basic regex to look for (Number/Fraction)(Chars)(Space)(Rest)
+    const match = line.match(/^([\d\.\/\s]+)?([a-zA-Z]+)?\s+(.*)/);
+    if (match) {
+        return {
+            quantity: parseFloat(match[1]) || 0,
+            unit: match[2] || '',
+            name: match[3] || line, 
+        };
+    }
+    return { name: line, quantity: 0, unit: '' };
 }

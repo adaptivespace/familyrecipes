@@ -8,6 +8,8 @@ import {
 } from '@mui/material';
 import { ImportResult } from '@/lib/importer';
 import AppHeader from '@/components/AppHeader';
+import { parseIngredientLine, ParsedIngredient } from '@/lib/parser';
+import { convertIngredient } from '@/lib/converter';
 
 export default function ImportPage() {
   const router = useRouter();
@@ -22,6 +24,7 @@ export default function ImportPage() {
   const [tags, setTags] = useState('');
   const [yieldNum, setYieldNum] = useState<number | string>(2);
   const [instructions, setInstructions] = useState('');
+  const [rawIngredients, setRawIngredients] = useState('');
 
   const handleImport = async () => {
     if (!url) return;
@@ -40,6 +43,14 @@ export default function ImportPage() {
       setTitle(data.title);
       setYieldNum(data.yield || 2);
       setInstructions(data.instructions);
+      
+      // Convert parsed ingredients to string for editing
+      const ingText = data.ingredients.map(ing => {
+         const unit = ing.unit ? `${ing.unit} ` : '';
+         return `${ing.quantity} ${unit}${ing.name}`.trim();
+      }).join('\n');
+      setRawIngredients(ingText);
+      
       setStep(1);
     } catch (err: any) {
       setError(err.message || 'Failed to import');
@@ -54,11 +65,21 @@ export default function ImportPage() {
       // Parse tags
       const tagList = tags.split(',').map(t => t.trim()).filter(Boolean);
       
+      // Parse manual ingredients
+      let finalIngredients = importedData.ingredients;
+      if (rawIngredients.trim()) {
+        finalIngredients = rawIngredients.split('\n').map(line => {
+           if (!line.trim()) return null;
+           const parsed = parseIngredientLine(line.trim());
+           return convertIngredient(parsed);
+        }).filter(Boolean) as ParsedIngredient[];
+      }
+      
       const payload = {
         title,
         tags: tagList,
         yield: Number(yieldNum) || 2,
-        ingredients: importedData.ingredients, // We assume parser did its best, or we could add an editor for this too
+        ingredients: finalIngredients,
         content: instructions,
         source_url: url,
         youtube_id: importedData.youtube_id,
@@ -137,15 +158,24 @@ export default function ImportPage() {
                  setYieldNum(isNaN(val) ? '' : val);
                }} 
              />
-             <TextField 
-               label="Tags (comma separated)" 
-               value={tags} 
-               onChange={e => setTags(e.target.value)} 
-               helperText="e.g. Asian, Dessert, Quick"
-             />
-             <TextField 
-               label="Instructions (Markdown)" 
-               multiline 
+              <TextField 
+                label="Tags (comma separated)" 
+                value={tags} 
+                onChange={e => setTags(e.target.value)} 
+                helperText="e.g. Asian, Dessert, Quick"
+              />
+              <TextField 
+                label="Ingredients (one per line)" 
+                multiline
+                rows={6}
+                value={rawIngredients} 
+                onChange={e => setRawIngredients(e.target.value)} 
+                helperText="Format: Quantity Unit Name (e.g. 200 g Flour)"
+              />
+              <TextField 
+                label="Instructions (Markdown)" 
+                multiline 
+
                rows={10} 
                value={instructions} 
                onChange={e => setInstructions(e.target.value)} 

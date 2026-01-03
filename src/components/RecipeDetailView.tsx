@@ -6,7 +6,7 @@ import { scaleRecipeText } from '@/lib/parser';
 import { 
   Box, Typography, IconButton, Button, Tab, Tabs, Container, 
   Paper, TextField, Chip, Dialog, DialogTitle, DialogContent, 
-  DialogContentText, DialogActions 
+  DialogContentText, DialogActions, Checkbox, FormControlLabel 
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HomeIcon from '@mui/icons-material/Home';
@@ -301,9 +301,19 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
             {tab === 1 && (
               <Box sx={{ 
                 '& p': { mb: 2, lineHeight: 1.7, fontSize: cookingMode ? '1.2rem' : '1rem' },
-                '& li': { mb: 1 }
+                '& li': { mb: 1, listStyle: 'none', pl: 0 },
+                '& ul, & ol': { pl: 0 }
               }}>
-                <ReactMarkdown>
+                <ReactMarkdown
+                  components={{
+                    li: ({ children }) => (
+                      <Box component="li" sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
+                        <Checkbox sx={{ mt: -1, mr: 1 }} />
+                        <Box sx={{ pt: 0.5 }}>{children}</Box>
+                      </Box>
+                    ),
+                  }}
+                >
                   {scaleRecipeText(recipe.content, multiplier)}
                 </ReactMarkdown>
               </Box>

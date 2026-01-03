@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { ParsedIngredient } from './parser';
+import { ParsedIngredient, parseIngredientLine } from './parser';
 import { convertToMetric, convertIngredient } from './converter';
 
 export interface ImportResult {
@@ -115,19 +115,10 @@ async function importFromWeb(url: string): Promise<ImportResult> {
     : [];
   
   const ingredients: ParsedIngredient[] = rawIngredients.map(str => {
-    // Simple parser: "200g flour" -> qty: 200, unit: g, name: flour
-    // Very basic regex
-    const match = str.match(/^([\d\.\/\s]+)?([a-zA-Z]+)?\s+(.*)/);
-    if (match) {
-        const parsed = {
-            quantity: parseFloat(match[1]) || 0,
-            unit: match[2] || '',
-            name: match[3] || str, // fallback
-        };
-        // Convert to Metric
-        return convertIngredient(parsed);
-    }
-    return { name: str, quantity: 0, unit: '' };
+    // Parse using shared logic
+    const parsed = parseIngredientLine(str);
+    // Convert to Metric
+    return convertIngredient(parsed);
   });
 
   // Instructions
