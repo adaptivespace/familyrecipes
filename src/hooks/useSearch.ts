@@ -4,7 +4,7 @@ import { Recipe } from '@/lib/recipes';
 
 export function useSearch(initialRecipes: Recipe[]) {
   const [query, setQuery] = useState('');
-  const [tagFilter, setTagFilter] = useState('');
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
   
   const fuse = useMemo(() => {
     return new Fuse(initialRecipes, {
@@ -17,17 +17,21 @@ export function useSearch(initialRecipes: Recipe[]) {
   const results = useMemo(() => {
     let filtered = initialRecipes;
 
-    // Apply strict tag filter if active
-    if (tagFilter) {
-      filtered = filtered.filter(r => r.tags?.includes(tagFilter));
+    // Apply strict tag filter if active (AND operator)
+    if (tagFilter.length > 0) {
+      filtered = filtered.filter(r => 
+        tagFilter.every(tag => r.tags?.includes(tag))
+      );
     }
 
     // Apply fuzzy search if query exists
     if (query) {
       const searchResults = fuse.search(query).map(r => r.item);
       // Intersect search results with tag filter
-      if (tagFilter) {
-        return searchResults.filter(r => r.tags?.includes(tagFilter));
+      if (tagFilter.length > 0) {
+        return searchResults.filter(r => 
+          tagFilter.every(tag => r.tags?.includes(tag))
+        );
       }
       return searchResults;
     }

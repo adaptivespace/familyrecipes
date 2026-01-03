@@ -33,7 +33,7 @@ export default function RecipeBrowser({ initialRecipes }: { initialRecipes: Reci
         onChange={(e) => {
             setQuery(e.target.value);
             // Clear tag filter if user starts typing a new query
-            if (e.target.value && tagFilter) setTagFilter('');
+            if (e.target.value && tagFilter.length > 0) setTagFilter([]);
         }}
         variant="outlined"
         sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 4, bgcolor: 'background.paper' } }}
@@ -53,23 +53,30 @@ export default function RecipeBrowser({ initialRecipes }: { initialRecipes: Reci
           label="All" 
           onClick={() => {
               setQuery('');
-              setTagFilter('');
+              setTagFilter([]);
           }}
-          variant={!query && !tagFilter ? 'filled' : 'outlined'}
-          color={!query && !tagFilter ? 'primary' : 'default'}
+          variant={!query && tagFilter.length === 0 ? 'filled' : 'outlined'}
+          color={!query && tagFilter.length === 0 ? 'primary' : 'default'}
         />
-        {allTags.map(tag => (
-          <Chip 
-            key={tag} 
-            label={tag} 
-            onClick={() => {
-                setTagFilter(tag);
-                setQuery(''); // Clear search text when selecting a tag
-            }} 
-            variant={tagFilter === tag ? 'filled' : 'outlined'}
-            color={tagFilter === tag ? 'primary' : 'default'}
-          />
-        ))}
+        {allTags.map(tag => {
+          const isSelected = tagFilter.includes(tag);
+          return (
+            <Chip 
+              key={tag} 
+              label={tag} 
+              onClick={() => {
+                  setQuery(''); // Clear search text when filtering by tags
+                  if (isSelected) {
+                    setTagFilter(tagFilter.filter(t => t !== tag));
+                  } else {
+                    setTagFilter([...tagFilter, tag]);
+                  }
+              }} 
+              variant={isSelected ? 'filled' : 'outlined'}
+              color={isSelected ? 'primary' : 'default'}
+            />
+          );
+        })}
       </Box>
 
       <Grid container spacing={2}>
