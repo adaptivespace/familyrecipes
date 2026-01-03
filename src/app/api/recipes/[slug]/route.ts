@@ -25,8 +25,10 @@ export async function PATCH(request: Request, { params }: RouteProps) {
   
   const body = await request.json();
   
-  // If content (instructions) is being updated, re-extract ingredients
-  if (body.content && body.content !== recipe.content) {
+  // Only re-extract ingredients from content if:
+  // 1. Content has changed
+  // 2. AND ingredients were NOT explicitly provided in the body (i.e. manual edit)
+  if (body.content && body.content !== recipe.content && !body.ingredients) {
     const extracted = extractIngredients(body.content);
     // Convert extracted ingredients to metric
     body.ingredients = extracted.map(convertIngredient);
