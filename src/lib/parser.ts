@@ -54,6 +54,18 @@ export function extractIngredients(text: string): ParsedIngredient[] {
  * Example: "200g flour" -> { quantity: 200, unit: 'g', name: 'flour' }
  */
 export function parseIngredientLine(line: string): ParsedIngredient {
+    const trimmed = line.trim();
+    
+    // Explicit header check: Starts with "0 " or is just "0"
+    // User request: "When I add a 0 in my ingredient list, I want you to treat what follows as a header"
+    if (trimmed === '0' || trimmed.startsWith('0 ')) {
+        return {
+            quantity: 0,
+            unit: '',
+            name: trimmed.substring(1).trim()
+        };
+    }
+
     // Simple parser: "200g flour" -> qty: 200, unit: g, name: flour
     // Very basic regex to look for (Number/Fraction)(Chars)(Space)(Rest)
     const match = line.match(/^([\d\.\/\s]+)?([a-zA-Z]+)?\s+(.*)/);
