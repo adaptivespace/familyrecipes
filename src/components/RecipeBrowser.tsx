@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { Recipe } from '@/lib/recipes';
 
 export default function RecipeBrowser({ initialRecipes }: { initialRecipes: Recipe[] }) {
-  const { query, setQuery, results } = useSearch(initialRecipes);
+  const { query, setQuery, tagFilter, setTagFilter, results } = useSearch(initialRecipes);
   
   const allTags = Array.from(new Set(initialRecipes.flatMap(r => r.tags || []))).sort();
 
@@ -30,7 +30,11 @@ export default function RecipeBrowser({ initialRecipes }: { initialRecipes: Reci
         fullWidth
         placeholder="Search recipes, ingredients, tags..."
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+            setQuery(e.target.value);
+            // Clear tag filter if user starts typing a new query
+            if (e.target.value && tagFilter) setTagFilter('');
+        }}
         variant="outlined"
         sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 4, bgcolor: 'background.paper' } }}
         slotProps={{
@@ -47,17 +51,23 @@ export default function RecipeBrowser({ initialRecipes }: { initialRecipes: Reci
       <Box sx={{ display: 'flex', gap: 1, overflowX: 'auto', pb: 2, mb: 2, '::-webkit-scrollbar': { display: 'none' } }}>
         <Chip 
           label="All" 
-          onClick={() => setQuery('')}
-          variant={query === '' ? 'filled' : 'outlined'}
-          color={query === '' ? 'primary' : 'default'}
+          onClick={() => {
+              setQuery('');
+              setTagFilter('');
+          }}
+          variant={!query && !tagFilter ? 'filled' : 'outlined'}
+          color={!query && !tagFilter ? 'primary' : 'default'}
         />
         {allTags.map(tag => (
           <Chip 
             key={tag} 
             label={tag} 
-            onClick={() => setQuery(tag)} 
-            variant={query === tag ? 'filled' : 'outlined'}
-            color={query === tag ? 'primary' : 'default'}
+            onClick={() => {
+                setTagFilter(tag);
+                setQuery(''); // Clear search text when selecting a tag
+            }} 
+            variant={tagFilter === tag ? 'filled' : 'outlined'}
+            color={tagFilter === tag ? 'primary' : 'default'}
           />
         ))}
       </Box>
