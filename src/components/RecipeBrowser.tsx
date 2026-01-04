@@ -34,7 +34,7 @@ export default function RecipeBrowser({ initialRecipes, isAdmin }: { initialReci
     <Container maxWidth="md" sx={{ pb: 10, pt: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-          Family Recipes
+          Family Recipes ({results.length})
         </Typography>
         {isAdmin ? (
           <IconButton onClick={handleLogout} color="primary" title="Logout">
