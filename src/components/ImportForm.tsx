@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Container, TextField, Button, Typography, Box, Paper, CircularProgress, 
-  Alert, Stepper, Step, StepLabel 
+  Alert, Stepper, Step, StepLabel, Divider 
 } from '@mui/material';
 import { ImportResult } from '@/lib/importer';
 import AppHeader from '@/components/AppHeader';
@@ -25,6 +25,21 @@ export default function ImportForm() {
   const [yieldNum, setYieldNum] = useState<number | string>(2);
   const [instructions, setInstructions] = useState('');
   const [rawIngredients, setRawIngredients] = useState('');
+
+  const handleManual = () => {
+    setImportedData({
+      title: '',
+      ingredients: [],
+      instructions: '',
+      yield: 2,
+    });
+    setTitle('');
+    setYieldNum(2);
+    setTags('');
+    setInstructions('');
+    setRawIngredients('');
+    setStep(1);
+  };
 
   const handleImport = async () => {
     if (!url) return;
@@ -131,6 +146,17 @@ export default function ImportForm() {
             size="large"
           >
             {loading ? <CircularProgress size={24} /> : 'Import'}
+          </Button>
+
+          <Divider sx={{ my: 3 }}>OR</Divider>
+          
+          <Button 
+            variant="outlined" 
+            onClick={handleManual} 
+            fullWidth
+            size="large"
+          >
+            Create Manually
           </Button>
         </Paper>
       )}
