@@ -14,17 +14,38 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import Link from 'next/link';
 import { Recipe } from '@/lib/recipes';
+import { useRouter } from 'next/navigation';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import IconButton from '@mui/material/IconButton';
 
-export default function RecipeBrowser({ initialRecipes }: { initialRecipes: Recipe[] }) {
+export default function RecipeBrowser({ initialRecipes, isAdmin }: { initialRecipes: Recipe[], isAdmin?: boolean }) {
   const { query, setQuery, tagFilter, setTagFilter, results } = useSearch(initialRecipes);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.refresh();
+  };
   
   const allTags = Array.from(new Set(initialRecipes.flatMap(r => r.tags || []))).sort();
 
   return (
     <Container maxWidth="md" sx={{ pb: 10, pt: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
-        Family Recipes
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+          Family Recipes
+        </Typography>
+        {isAdmin ? (
+          <IconButton onClick={handleLogout} color="primary" title="Logout">
+             <LogoutIcon />
+          </IconButton>
+        ) : (
+          <IconButton component={Link} href="/login" color="default" title="Login">
+             <LoginIcon />
+          </IconButton>
+        )}
+      </Box>
       
       <TextField
         fullWidth
@@ -95,15 +116,17 @@ export default function RecipeBrowser({ initialRecipes }: { initialRecipes: Reci
         </Box>
       )}
 
-      <Fab 
-        color="primary" 
-        aria-label="add" 
-        sx={{ position: 'fixed', bottom: 24, right: 24 }}
-        component={Link}
-        href="/import"
-      >
-        <AddIcon />
-      </Fab>
+      {isAdmin && (
+        <Fab 
+          color="primary" 
+          aria-label="add" 
+          sx={{ position: 'fixed', bottom: 24, right: 24 }}
+          component={Link}
+          href="/import"
+        >
+          <AddIcon />
+        </Fab>
+      )}
     </Container>
   );
 }

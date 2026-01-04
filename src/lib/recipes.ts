@@ -13,7 +13,6 @@ export interface Recipe {
   yield: number;
   source_url?: string;
   youtube_id?: string;
-  notes?: string;
   image?: string;
   content: string; // Markdown body
 }
@@ -40,7 +39,6 @@ export function getRecipes(): Recipe[] {
         yield: data.yield || 1,
         source_url: data.source_url,
         youtube_id: data.youtube_id,
-        notes: data.notes,
         image: data.image,
         content: content,
       } as Recipe;
@@ -73,7 +71,6 @@ export function getRecipe(slug: string): Recipe | null {
     yield: data.yield || 1,
     source_url: data.source_url,
     youtube_id: data.youtube_id,
-    notes: data.notes,
     image: data.image,
     content: content,
   } as Recipe;
@@ -93,7 +90,6 @@ export function saveRecipe(recipe: Recipe): void {
     yield: recipe.yield,
     source_url: recipe.source_url,
     youtube_id: recipe.youtube_id,
-    notes: recipe.notes,
     image: recipe.image,
   };
 

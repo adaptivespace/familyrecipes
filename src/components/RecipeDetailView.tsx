@@ -10,13 +10,14 @@ import {
 } from '@mui/material';
 import { parseIngredientLine, ParsedIngredient } from '@/lib/parser';
 import { convertIngredient } from '@/lib/converter';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HomeIcon from '@mui/icons-material/Home';
 import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 import WbSunnyIcon from '@mui/icons-material/WbSunny'; 
 import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
@@ -25,14 +26,21 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import ReactMarkdown from 'react-markdown';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
+export default function RecipeDetailView({ recipe, isAdmin }: { recipe: Recipe, isAdmin?: boolean }) {
   const router = useRouter();
   const [servings, setServings] = useState(recipe.yield || 2);
   const [tab, setTab] = useState(0);
   const [cookingMode, setCookingMode] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.refresh();
+  };
+
   const [editForm, setEditForm] = useState({
     title: recipe.title,
     yield: recipe.yield || 2,
@@ -52,8 +60,6 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
       setRawIngredients(ingText);
     }
   }, [isEditing, recipe.ingredients]);
-  const [notes, setNotes] = useState(recipe.notes || '');
-  const [savingNotes, setSavingNotes] = useState(false);
   const [uploading, setUploading] = useState(false);
   
   const multiplier = servings / (recipe.yield || 1);
@@ -75,17 +81,6 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
       if (wakeLock) wakeLock.release();
     };
   }, [cookingMode]);
-
-  // Save Notes
-  const saveNotes = async () => {
-    setSavingNotes(true);
-    await fetch(`/api/recipes/${recipe.slug}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ notes }),
-    });
-    setSavingNotes(false);
-  };
 
   // Upload Image
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,17 +172,30 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
       <Box sx={{ position: 'relative', height: 250, bgcolor: 'grey.300', overflow: 'hidden' }}>
         <Box sx={{ position: 'absolute', top: 16, left: 16, zIndex: 10, display: 'flex', gap: 1 }}>
           <IconButton 
-            onClick={() => router.back()} 
-            sx={{ bgcolor: 'rgba(0,0,0,0.4)', color: 'white', '&:hover': { bgcolor: 'rgba(0,0,0,0.6)' } }}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <IconButton 
             onClick={() => router.push('/')} 
             sx={{ bgcolor: 'rgba(0,0,0,0.4)', color: 'white', '&:hover': { bgcolor: 'rgba(0,0,0,0.6)' } }}
           >
             <HomeIcon />
           </IconButton>
+          
+          {isAdmin ? (
+            <IconButton 
+              onClick={handleLogout}
+              sx={{ bgcolor: 'rgba(0,0,0,0.4)', color: 'white', '&:hover': { bgcolor: 'rgba(0,0,0,0.6)' } }}
+              title="Logout"
+            >
+              <LogoutIcon />
+            </IconButton>
+          ) : (
+             <IconButton 
+              component={Link}
+              href="/login"
+              sx={{ bgcolor: 'rgba(0,0,0,0.4)', color: 'white', '&:hover': { bgcolor: 'rgba(0,0,0,0.6)' } }}
+              title="Login"
+            >
+              <LoginIcon />
+            </IconButton>
+          )}
         </Box>
         
         {recipe.youtube_id ? (
@@ -206,14 +214,16 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
         ) : (
           <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 2 }}>
              <CameraAltIcon sx={{ fontSize: 60, color: 'text.secondary' }} />
-             <Button variant="contained" component="label" disabled={uploading}>
-               {uploading ? 'Uploading...' : 'Take Photo'}
-               <input type="file" hidden accept="image/*" capture="environment" onChange={handleImageUpload} />
-             </Button>
+             {isAdmin && (
+               <Button variant="contained" component="label" disabled={uploading}>
+                 {uploading ? 'Uploading...' : 'Take Photo'}
+                 <input type="file" hidden accept="image/*" capture="environment" onChange={handleImageUpload} />
+               </Button>
+             )}
           </Box>
         )}
         
-        {recipe.image && (
+        {recipe.image && isAdmin && (
           <IconButton 
             component="label" 
             sx={{ position: 'absolute', bottom: 16, right: 16, bgcolor: 'rgba(0,0,0,0.4)', color: 'white' }}
@@ -233,12 +243,16 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
             <IconButton onClick={handleShare}>
               <ShareIcon />
             </IconButton>
-            <IconButton onClick={() => setIsEditing(!isEditing)} color={isEditing ? 'primary' : 'default'}>
-              {isEditing ? <CancelIcon /> : <EditIcon />}
-            </IconButton>
-            <IconButton onClick={() => setDeleteDialogOpen(true)} color="error">
-              <DeleteIcon />
-            </IconButton>
+            {isAdmin && (
+              <>
+                <IconButton onClick={() => setIsEditing(!isEditing)} color={isEditing ? 'primary' : 'default'}>
+                  {isEditing ? <CancelIcon /> : <EditIcon />}
+                </IconButton>
+                <IconButton onClick={() => setDeleteDialogOpen(true)} color="error">
+                  <DeleteIcon />
+                </IconButton>
+              </>
+            )}
             <IconButton onClick={() => setCookingMode(!cookingMode)} color={cookingMode ? 'warning' : 'default'}>
                {cookingMode ? <WbSunnyIcon /> : <WbSunnyOutlinedIcon />}
             </IconButton>
@@ -313,7 +327,6 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
             <Tabs value={tab} onChange={(e, v) => setTab(v)} variant="fullWidth" sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}>
               <Tab label="Ingredients" />
               <Tab label="Instructions" />
-              <Tab label="Notes" />
             </Tabs>
 
             {tab === 0 && (
@@ -361,25 +374,6 @@ export default function RecipeDetailView({ recipe }: { recipe: Recipe }) {
                 >
                   {scaleRecipeText(recipe.content, multiplier)}
                 </ReactMarkdown>
-              </Box>
-            )}
-
-            {tab === 2 && (
-              <Box>
-                <TextField
-                  multiline
-                  rows={6}
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Add your notes here..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  onBlur={saveNotes}
-                  sx={{ mb: 2 }}
-                />
-                <Button variant="contained" onClick={saveNotes} disabled={savingNotes}>
-                  {savingNotes ? 'Saving...' : 'Save Notes'}
-                </Button>
               </Box>
             )}
           </>
